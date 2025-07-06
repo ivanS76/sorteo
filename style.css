@@ -1,0 +1,138 @@
+body {
+  margin: 0;
+  padding: 0;
+  background: linear-gradient(to bottom, #e3f2fd, #bbdefb);
+  font-family: 'Segoe UI', sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  min-height: 100vh;
+  padding: 30px 0;
+}
+
+.container {
+  background: white;
+  padding: 30px;
+  border-radius: 16px;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.15);
+  max-width: 900px;
+  width: 95%;
+  text-align: center;
+}
+
+h1 {
+  color: #0d47a1;
+  margin-bottom: 25px;
+}
+
+#resultado {
+  font-size: 80px;
+  color: #43a047;
+  font-weight: bold;
+  margin: 20px 0 15px;
+  transition: transform 0.3s ease;
+}
+
+#resultado.animar {
+  transform: scale(1.4);
+}
+
+input[type="text"] {
+  padding: 10px;
+  width: 60%;
+  font-size: 16px;
+  border-radius: 8px;
+  border: 2px solid #2196f3;
+  margin-right: 10px;
+  outline: none;
+  transition: border-color 0.3s;
+}
+
+input[type="text"]:focus {
+  border-color: #0d47a1;
+}
+
+button {
+  padding: 12px 25px;
+  font-size: 18px;
+  background-color: #2196f3;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  margin: 0 8px 20px 8px;
+  transition: 0.3s;
+}
+
+button:hover {
+  background-color: #1976d2;
+}
+
+#tablero {
+  margin-top: 10px;
+  display: grid;
+  grid-template-columns: repeat(20, 1fr);
+  gap: 6px;
+  max-height: 400px;
+  overflow-y: auto;
+  border: 1px solid #ccc;
+  padding: 10px;
+  border-radius: 8px;
+}
+
+.numero {
+  background: #e0f7fa;
+  color: #006064;
+  border: 2px solid #00acc1;
+  border-radius: 50%;
+  width: 38px;
+  height: 38px;
+  font-size: 16px;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  user-select: none;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.numero.salido {
+  background: #4caf50;
+  color: white;
+  border-color: #388e3c;
+  cursor: default;
+}
+
+.numero.destacado {
+  animation: brillo 1s infinite alternate;
+  background: #fdd835;
+  color: #5d4037;
+  border-color: #fbc02d;
+  cursor: default;
+}
+
+@keyframes brillo {
+  0% { box-shadow: 0 0 5px 2px #fbc02d; }
+  100% { box-shadow: 0 0 15px 6px #fdd835; }
+}
+
+#listaGanadores {
+  list-style: none;
+  padding: 0;
+  max-height: 200px;
+  overflow-y: auto;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  margin-top: 10px;
+  text-align: left;
+}
+
+#listaGanadores li {
+  padding: 8px 12px;
+  border-bottom: 1px solid #ddd;
+  font-size: 16px;
+}
+
+#listaGanadores li:last-child {
+  border-bottom: none;
+}
