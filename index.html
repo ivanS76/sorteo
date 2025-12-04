@@ -4,38 +4,490 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Gran Sorteo</title>
-  <link rel="stylesheet" href="style.css" />
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 2rem;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .container {
+      background: white;
+      border-radius: 20px;
+      padding: 2rem;
+      max-width: 1400px;
+      width: 100%;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    }
+
+    .main-layout {
+      display: grid;
+      grid-template-columns: 1fr 350px;
+      gap: 2rem;
+    }
+
+    .left-panel {
+      min-width: 0;
+    }
+
+    .right-panel {
+      position: sticky;
+      top: 2rem;
+      align-self: start;
+      max-height: calc(100vh - 4rem);
+      overflow-y: auto;
+      background: #f8f9fa;
+      padding: 1.5rem;
+      border-radius: 15px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .right-panel h3 {
+      margin-top: 0;
+      position: sticky;
+      top: -1.5rem;
+      background: #f8f9fa;
+      padding: 1rem 0;
+      z-index: 1;
+    }
+
+    h1 {
+      text-align: center;
+      color: #667eea;
+      margin-bottom: 0.5rem;
+      font-size: 2.5rem;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    h2 {
+      text-align: center;
+      color: #666;
+      margin-bottom: 2rem;
+      font-weight: 400;
+    }
+
+    #resultado {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      font-size: 4rem;
+      font-weight: bold;
+      text-align: center;
+      padding: 2rem;
+      border-radius: 15px;
+      margin-bottom: 2rem;
+      min-height: 120px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+      transition: all 0.3s ease;
+    }
+
+    #resultado.animando {
+      transform: scale(1.1);
+      animation: pulse 0.5s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1.1); }
+      50% { transform: scale(1.15); }
+    }
+
+    .input-group {
+      background: #f8f9fa;
+      padding: 1.5rem;
+      border-radius: 10px;
+      margin-bottom: 1.5rem;
+    }
+
+    .input-group label {
+      display: block;
+      margin-bottom: 0.5rem;
+      color: #333;
+      font-weight: 600;
+    }
+
+    input[type="text"],
+    input[type="number"] {
+      width: 100%;
+      padding: 0.75rem;
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      font-size: 1rem;
+      transition: border-color 0.3s;
+    }
+
+    input[type="text"]:focus,
+    input[type="number"]:focus {
+      outline: none;
+      border-color: #667eea;
+    }
+
+    .button-group {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 2rem;
+      flex-wrap: wrap;
+    }
+
+    button {
+      flex: 1;
+      min-width: 150px;
+      padding: 1rem 2rem;
+      font-size: 1rem;
+      font-weight: 600;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+    }
+
+    button:active {
+      transform: translateY(0);
+    }
+
+    .btn-sortear {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+    }
+
+    .btn-guardar {
+      background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+      color: white;
+    }
+
+    .btn-crear {
+      background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+      color: white;
+    }
+
+    .btn-reiniciar {
+      background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+      color: white;
+    }
+
+    h3 {
+      color: #333;
+      margin: 2rem 0 1rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 3px solid #667eea;
+    }
+
+    #tablero {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
+      gap: 10px;
+      margin-bottom: 2rem;
+    }
+
+    .numero {
+      aspect-ratio: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #f0f0f0;
+      border-radius: 10px;
+      font-weight: 600;
+      font-size: 1.2rem;
+      transition: all 0.3s ease;
+      cursor: pointer;
+      border: 2px solid transparent;
+    }
+
+    .numero:hover {
+      transform: scale(1.05);
+      border-color: #667eea;
+    }
+
+    .numero.sorteado {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      cursor: default;
+    }
+
+    .numero.ultimo-sorteado {
+      animation: destacar 1s ease;
+    }
+
+    @keyframes destacar {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.2); }
+    }
+
+    #listaGanadores {
+      list-style: none;
+    }
+
+    #listaGanadores li {
+      background: #f8f9fa;
+      padding: 1rem;
+      margin-bottom: 0.5rem;
+      border-radius: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: all 0.3s ease;
+    }
+
+    #listaGanadores li:hover {
+      background: #e9ecef;
+      transform: translateX(5px);
+    }
+
+    .numero-ganador {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 0.5rem 1rem;
+      border-radius: 50px;
+      font-weight: bold;
+      min-width: 50px;
+      text-align: center;
+    }
+
+    .nombre-ganador {
+      flex: 1;
+      margin-left: 1rem;
+      font-weight: 600;
+      color: #333;
+    }
+
+    @media (max-width: 768px) {
+      body {
+        padding: 1rem;
+      }
+
+      .main-layout {
+        grid-template-columns: 1fr;
+      }
+
+      .right-panel {
+        position: relative;
+        top: 0;
+        max-height: none;
+      }
+
+      h1 {
+        font-size: 2rem;
+      }
+
+      #resultado {
+        font-size: 3rem;
+        padding: 1.5rem;
+      }
+
+      .button-group {
+        flex-direction: column;
+      }
+
+      button {
+        min-width: 100%;
+      }
+
+      #tablero {
+        grid-template-columns: repeat(auto-fill, minmax(50px, 1fr));
+        gap: 5px;
+      }
+
+      .numero {
+        font-size: 1rem;
+      }
+    }
+  </style>
 </head>
 <body>
   <div class="container">
     <h1>🎲 Gran Sorteo</h1>
-    <h2 id="tituloRango">Bienvenidos </h2>
+    <h2 id="tituloRango">Bienvenidos</h2>
 
-    <div id="resultado">--</div>
+    <div class="main-layout">
+      <div class="left-panel">
+        <div id="resultado">--</div>
 
-    <div id="inputNombreContainer" style="display:none; margin-bottom: 20px;">
-      <input type="text" id="nombreGanador" placeholder="Escribe el nombre del ganador" />
-      <button onclick="agregarNombre()"> Guardar Nombre</button>
+        <div id="inputNombreContainer" style="display:none;" class="input-group">
+          <label for="nombreGanador">Nombre del ganador:</label>
+          <input type="text" id="nombreGanador" placeholder="Escribe el nombre del ganador" />
+          <div style="margin-top: 1rem;">
+            <button class="btn-guardar" onclick="agregarNombre()">💾 Guardar Nombre</button>
+          </div>
+        </div>
+
+        <div class="input-group">
+          <label for="cantidadNumeros">Cantidad de números a sortear:</label>
+          <input type="number" id="cantidadNumeros" min="1" value="100" />
+          <div style="margin-top: 1rem;">
+            <button class="btn-crear" onclick="reiniciarDesdeInput()">🔄 Crear Tablero</button>
+          </div>
+        </div>
+
+        <div class="button-group">
+          <button class="btn-sortear" onclick="sortear()">🎯 Sortear Número</button>
+          <button class="btn-reiniciar" onclick="reiniciarTodo()">🔄 Reiniciar Todo</button>
+        </div>
+
+        <h3>📊 Tablero de números</h3>
+        <div id="tablero"></div>
+      </div>
+
+      <div class="right-panel">
+        <h3>🏆 Lista de ganadores</h3>
+        <ul id="listaGanadores"></ul>
+      </div>
     </div>
-
-    <!-- Bloque de configuración (solo una vez) -->
-    <div style="margin-bottom: 1rem;">
-      <label for="cantidadNumeros">Cantidad de números:</label>
-      <input type="number" id="cantidadNumeros" min="1" value="100" />
-      <button onclick="reiniciarDesdeInput()">Crear tablero</button>
-    </div>
-
-    <button onclick="sortear()">Sortear Número</button>
-    <button onclick="reiniciarTodo()">Reiniciar Todo</button>
-
-
-    <h3>Tablero de números:</h3>
-    <div id="tablero"></div>
-
-    <h3>Lista de los ganadores:</h3>
-    <ul id="listaGanadores"></ul>
   </div>
 
-  <script src="script.js"></script>
+  <script>
+    let numeros = [];
+    let ganadores = [];
+    let cantidadTotal = 100;
+    let numeroActual = null;
+
+    function crearTablero(cantidad) {
+      cantidadTotal = cantidad;
+      numeros = Array.from({ length: cantidad }, (_, i) => i + 1);
+      ganadores = [];
+      numeroActual = null;
+
+      const tablero = document.getElementById('tablero');
+      tablero.innerHTML = '';
+      
+      numeros.forEach(num => {
+        const div = document.createElement('div');
+        div.className = 'numero';
+        div.textContent = num;
+        div.id = `num-${num}`;
+        tablero.appendChild(div);
+      });
+
+      document.getElementById('resultado').textContent = '--';
+      document.getElementById('listaGanadores').innerHTML = '';
+      document.getElementById('inputNombreContainer').style.display = 'none';
+      document.getElementById('tituloRango').textContent = `Números del 1 al ${cantidad}`;
+    }
+
+    function sortear() {
+      if (numeros.length === 0) {
+        alert('¡Ya se sortearon todos los números!');
+        return;
+      }
+
+      const resultado = document.getElementById('resultado');
+      resultado.classList.add('animando');
+      
+      let contador = 0;
+      const intervalo = setInterval(() => {
+        const numAleatorio = numeros[Math.floor(Math.random() * numeros.length)];
+        resultado.textContent = numAleatorio;
+        contador++;
+        
+        if (contador >= 20) {
+          clearInterval(intervalo);
+          
+          const indice = Math.floor(Math.random() * numeros.length);
+          numeroActual = numeros[indice];
+          numeros.splice(indice, 1);
+          
+          resultado.textContent = numeroActual;
+          resultado.classList.remove('animando');
+          
+          const elementoNumero = document.getElementById(`num-${numeroActual}`);
+          if (elementoNumero) {
+            elementoNumero.classList.add('sorteado', 'ultimo-sorteado');
+            setTimeout(() => {
+              elementoNumero.classList.remove('ultimo-sorteado');
+            }, 1000);
+          }
+          
+          document.getElementById('inputNombreContainer').style.display = 'block';
+          document.getElementById('nombreGanador').value = '';
+          document.getElementById('nombreGanador').focus();
+        }
+      }, 100);
+    }
+
+    function agregarNombre() {
+      const nombre = document.getElementById('nombreGanador').value.trim();
+      
+      if (!nombre) {
+        alert('Por favor, escribe un nombre');
+        return;
+      }
+      
+      if (numeroActual === null) {
+        alert('Primero debes sortear un número');
+        return;
+      }
+      
+      ganadores.push({ numero: numeroActual, nombre: nombre });
+      
+      const lista = document.getElementById('listaGanadores');
+      const li = document.createElement('li');
+      li.innerHTML = `
+        <span class="numero-ganador">${numeroActual}</span>
+        <span class="nombre-ganador">${nombre}</span>
+      `;
+      lista.appendChild(li);
+      
+      document.getElementById('inputNombreContainer').style.display = 'none';
+      document.getElementById('nombreGanador').value = '';
+      numeroActual = null;
+      
+      if (numeros.length === 0) {
+        document.getElementById('resultado').textContent = '¡Sorteo completado!';
+      }
+    }
+
+    function reiniciarDesdeInput() {
+      const cantidad = parseInt(document.getElementById('cantidadNumeros').value);
+      
+      if (!cantidad || cantidad < 1) {
+        alert('Por favor, ingresa una cantidad válida (mínimo 1)');
+        return;
+      }
+      
+      crearTablero(cantidad);
+    }
+
+    function reiniciarTodo() {
+      if (ganadores.length > 0) {
+        const confirmar = confirm('¿Estás seguro de que quieres reiniciar todo? Se perderán todos los ganadores registrados.');
+        if (!confirmar) return;
+      }
+      
+      crearTablero(cantidadTotal);
+    }
+
+    // Permitir guardar nombre con Enter
+    document.addEventListener('DOMContentLoaded', () => {
+      crearTablero(100);
+      
+      document.getElementById('nombreGanador').addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+          agregarNombre();
+        }
+      });
+      
+      document.getElementById('cantidadNumeros').addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+          reiniciarDesdeInput();
+        }
+      });
+    });
+  </script>
 </body>
 </html>
